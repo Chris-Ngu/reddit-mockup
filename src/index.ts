@@ -2,26 +2,19 @@ import { MikroORM } from '@mikro-orm/core';
 import { __prod__ } from './constants';
 import { Post } from './entities/Post';
 
-if (!__prod__) {
-    require('dotenv').config();
-}
+import microConfig from './mikro-orm.config';
 
 const main = async () => {
-
-    const orm = await MikroORM.init({
-        user: process.env.USER,
-        password: process.env.PASSWORD,
-        debug: !__prod__,
-        dbName: process.env.NAME,
-    
-        entities: [Post],
-        type: 'postgresql'
-    });
+    const orm = await MikroORM.init(microConfig);
+    await orm.getMigrator().up();
 
     const post = orm.em.create(Post, { title: 'my first post' });
-    //const post = new Post('my first post');
-
     await orm.em.persistAndFlush(post);
+
+    //Showing all posts
+    const posts = await orm.em.find(Post, {});
+
+    console.log(posts);
 }
 
 main().catch((err) => {
