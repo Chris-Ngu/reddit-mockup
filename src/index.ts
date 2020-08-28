@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { MikroORM } from '@mikro-orm/core';
 import { __prod__ } from './constants';
 import express from 'express';
@@ -18,7 +19,7 @@ const main = async () => {
             resolvers: [HelloResolver, PostResolver],
             validate: false
         }),
-        context: () => { em: orm.em }
+        context: () => ({ em: orm.em }),
     });
 
     apolloServer.applyMiddleware({ app });
