@@ -147,7 +147,7 @@ export class UserResolver {
     ): Promise<boolean> {
         try {
             await em.nativeDelete(User, { username })
-        } catch {
+        } catch (e: unknown) {
             return false
         }
         return true;
