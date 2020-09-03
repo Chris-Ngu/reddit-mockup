@@ -1,0 +1,1 @@
+export const __backend__: string = "http://localhost:4000/graphql";
