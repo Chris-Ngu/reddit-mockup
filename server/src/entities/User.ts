@@ -6,9 +6,9 @@ import { ObjectType, Field, Int } from "type-graphql";
 @ObjectType()
 @Entity()
 export class User {
-    @Field(() => Int)
+    @Field()
     @PrimaryKey()
-    id!: number;
+    id: number;
 
     @Field(() => String)
     @Property({type: 'date'})
@@ -20,7 +20,7 @@ export class User {
 
     @Field()
     @Property({ type: 'text', unique: true})
-    username!: string;
+    username: string;
 
     @Property({type: 'text'})
     password!: string;

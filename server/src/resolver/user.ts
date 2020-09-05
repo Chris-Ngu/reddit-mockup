@@ -90,8 +90,8 @@ export class UserResolver {
 
         try {
             await em.persistAndFlush(user);
-        } catch (err) {
-            if (err.code === "23505" || err.detail.includes("already exists")) {
+        } catch (err: unknown) {
+            if (err.code === "23505" || err.detail?.include("already exists")) {
                 return {
                     errors: [{
                         field: 'username',
@@ -99,6 +99,7 @@ export class UserResolver {
                     }]
                 };
             }
+
 
         }
 
