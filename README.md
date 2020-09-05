@@ -8,3 +8,5 @@ A reddit mockup following Ben Awad
 * Redis
 * Mongoose
 * Mikro-orm
+* Chakra UI
+* Next.JS
