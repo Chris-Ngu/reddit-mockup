@@ -6,6 +6,7 @@
 import { Resolver, Query, Ctx, Arg, Mutation, InputType, Field, ObjectType } from 'type-graphql';
 import { User } from '../entities/User';
 import { MyContext } from '../types';
+import {__cookieName__} from '../constants';
 import { EntityManager } from '@mikro-orm/postgresql';
 
 import argon2 from 'argon2';
@@ -165,5 +166,18 @@ export class UserResolver {
             return false
         }
         return true;
+    }
+
+    @Mutation(() => Boolean)
+    async logout(@Ctx() { req, res }: MyContext) {
+        return new Promise((resolve) => req.session.destroy((err) => {
+            res.clearCookie(__cookieName__)
+            if (err) {
+                console.log(err);
+                resolve(false);
+                return;
+            }
+            resolve(true);
+        }));
     }
 }

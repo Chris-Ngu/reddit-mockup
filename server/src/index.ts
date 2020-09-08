@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { MikroORM } from '@mikro-orm/core';
-import { __prod__, __corsOrigin__ } from './constants';
+import { __prod__, __corsOrigin__, __cookieName__ } from './constants';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
@@ -33,7 +33,7 @@ const main = async () => {
 
     app.use(
         session({
-            name: 'qid',
+            name: __cookieName__,
             store: new RedisStore({
                 client: redisClient,
                 disableTouch: true

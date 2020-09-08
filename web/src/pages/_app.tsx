@@ -1,11 +1,60 @@
 import { ThemeProvider, CSSReset, ColorModeProvider } from '@chakra-ui/core'
-import { Provider, createClient } from 'urql';
+import { Provider, createClient, dedupExchange, fetchExchange } from 'urql';
+import { cacheExchange, Cache, QueryInput } from "@urql/exchange-graphcache";
 
 import theme from '../theme'
 import { __backend__ } from '../constants';
+import { MeDocument, Query, LoginMutation, MeQuery, CreateUserMutation } from 'src/generated/graphql';
 
-const client = createClient({ 
-  url: __backend__ ,
+function betterUpdateQuery<Result, Query>(
+  cache: Cache,
+  qi: QueryInput,
+  result: any,
+  fn: (r: Result, q: Query) => Query
+) {
+  return cache.updateQuery(qi, data => fn(result, data as any) as any)
+}
+
+const client = createClient({
+  url: __backend__,
+  exchanges: [dedupExchange, cacheExchange({
+    updates: {
+      Mutation: {
+        login: (_result, args, cache, info) => {
+          betterUpdateQuery<LoginMutation, MeQuery>(
+            cache,
+            { query: MeDocument },
+            _result,
+            (result, query) => {
+              if (result.login.errors) {
+                return query;
+              } else {
+                return {
+                  me: result.login.user
+                };
+              }
+            }
+          );
+        },
+        createUser: (_result, args, cache, info) => {
+          betterUpdateQuery<CreateUserMutation, MeQuery>(
+            cache,
+            { query: MeDocument },
+            _result,
+            (result, query) => {
+              if (result.createUser.errors) {
+                return query;
+              } else {
+                return {
+                  me: result.createUser.user
+                };
+              }
+            }
+          );
+        },
+      }
+    }
+  }), fetchExchange],
   fetchOptions: {
     credentials: "include"
   },
