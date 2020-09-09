@@ -1,12 +1,7 @@
-/*
-    I did not allow UpdateUser Query as I do not know if I should allow users 
-    to update at this time/ other conflicts that could arise 
-*/
-
 import { Resolver, Query, Ctx, Arg, Mutation, InputType, Field, ObjectType } from 'type-graphql';
 import { User } from '../entities/User';
 import { MyContext } from '../types';
-import {__cookieName__} from '../constants';
+import { __cookieName__ } from '../constants';
 import { EntityManager } from '@mikro-orm/postgresql';
 
 import argon2 from 'argon2';
@@ -40,6 +35,15 @@ class FieldError {
 
 @Resolver()
 export class UserResolver {
+    @Mutation(() => Boolean)
+    async forgotPassword(
+        @Arg("email") email: string,
+        @Ctx() { em }: MyContext
+    ): Promise<Boolean> {
+        return true;
+    }
+
+
     @Query(() => User, { nullable: true })
     async me(
         @Ctx() { em, req }: MyContext
