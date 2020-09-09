@@ -2,11 +2,17 @@
 A reddit mockup following Ben Awad
 
 # Stack
+
+##### Backend
 * Typescript
-* PostgreSQL
-* GraphQL
-* Redis
-* Mongoose
-* Mikro-orm
-* Chakra UI
-* Next.JS
+* PostgreSQL - Database
+* GraphQL - API
+* Redis - Session Cookies
+* Mongoose - Backend Structure
+* Mikro-orm - ORM
+
+##### Frontend
+* Typescript
+* URQL - GraphQL API Connection
+* Chakra UI - Bootstrap components
+* Next.JS - SSR 
