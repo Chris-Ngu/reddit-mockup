@@ -48,7 +48,9 @@ export class UserResolver {
             };
         }
 
-        const userID = await redis.get(FORGET_PASSWORD_PREFIX + token);
+        const key = FORGET_PASSWORD_PREFIX + token;
+        const userID = await redis.get(key);
+
         if (!userID) {
             return {
                 errors: [
@@ -60,7 +62,9 @@ export class UserResolver {
             };
         }
 
-        const user = em.findOne(User, { id: parseInt(userID) }) as any
+        const userIdNum = parseInt(userID);
+        const user = await em.findOne(User, { id: userIdNum })
+
         if (!user) {
             return {
                 errors: [
@@ -75,8 +79,10 @@ export class UserResolver {
         user.password = await argon2.hash(newPassword);
         await em.persistAndFlush(user);
 
-        req.session.userId = user.id
+        // Deleting reset password token
+        await redis.del(key);
 
+        req.session.userId = user.id
         return { user };
     }
 
