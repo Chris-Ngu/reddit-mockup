@@ -1,11 +1,11 @@
 import 'reflect-metadata';
-import { MikroORM } from '@mikro-orm/core';
+import { createConnection } from 'typeorm';
+import TypeOrmConfig from './typeorm.config';
 import { __prod__, __corsOrigin__, __cookieName__ } from './constants';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 
-import microConfig from './mikro-orm.config';
 import { HelloResolver } from './resolver/hello';
 import { PostResolver } from './resolver/post';
 import { UserResolver } from './resolver/user';
@@ -16,9 +16,19 @@ import connectRedis from 'connect-redis';
 
 import cors from 'cors';
 
+import { Post } from './entities/Post';
+import { User } from './entities/User';
+
 const main = async () => {
-    const orm = await MikroORM.init(microConfig);
-    await orm.getMigrator().up();
+    const conn = await createConnection({
+        type: 'postgres',
+        database: 'awad',
+        username: 'postgres',
+        password: 'postgres',
+        logging: true,
+        synchronize: true,
+        entities: [Post, User]
+    });
 
     const app = express();
     const RedisStore = connectRedis(session);
@@ -55,7 +65,7 @@ const main = async () => {
             resolvers: [HelloResolver, PostResolver, UserResolver],
             validate: false
         }),
-        context: ({ req, res }) => ({ em: orm.em, req, res, redis }),
+        context: ({ req, res }) => ({ req, res, redis }),
     });
 
     apolloServer.applyMiddleware({
@@ -65,14 +75,6 @@ const main = async () => {
     app.listen(4000, () => {
         console.log('Backend server started on localhost:4000');
     });
-
-    // creating post
-    // const post = orm.em.create(Post, { title: 'my first post' });
-    // await orm.em.persistAndFlush(post);
-
-    // Showing all posts
-    // const records = await orm.em.find(Post, {});
-    // console.log(records);
 }
 
 main().catch((err) => {
