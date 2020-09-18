@@ -25,7 +25,8 @@
     "react-dom": "^16.12.0",
     "react-is": "^16.13.1",
     "typescript": "^4.0.2",
-    "urql": "^1.10.0"
+    "urql": "^1.10.0",
+    "wonka": "^4.0.14"
   },
   "license": "MIT",
   "devDependencies": {
