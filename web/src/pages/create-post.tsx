@@ -7,21 +7,24 @@ import { useCreatePostMutation } from '../generated/graphql';
 import { useRouter } from 'next/router';
 import { withUrqlClient } from 'next-urql';
 import { createUrqlClient } from 'src/utils/createUrqlClient';
+import { useIsAuth } from 'src/utils/useIsAuth';
 
 const CreatePost: React.FC<{}> = ({ }) => {
     const [, createPost] = useCreatePostMutation();
     const router = useRouter();
+    useIsAuth();
     return (
         <Layout variant="small">
             <Formik
                 initialValues={{ title: "", text: "" }}
-                onSubmit={async (value, { setErrors }) => {
+                onSubmit={async (value) => {
                     const { error } = await createPost({ input: value });
+                    // if (error?.message.includes('not authenticated')) {
+                    //     router.push('/register')
+                    // }
                     if (!error) {
                         router.push('/');
                     }
-
-                    router.push('/');
                 }}
             >
                 {({ isSubmitting }) => (
